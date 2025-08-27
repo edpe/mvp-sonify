@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import { startAudio } from "./main";
 
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
 const SEASONS = ["Winter", "Spring", "Summer", "Autumn"];
@@ -11,12 +12,21 @@ function App() {
   const [season, setSeason] = useState(SEASONS[0]);
   const [reverb, setReverb] = useState<"Eco" | "Studio">("Eco");
 
+  const handleStartAudio = async () => {
+    try {
+      await startAudio();
+      setAudioStarted(true);
+    } catch (error) {
+      console.error("Failed to start audio:", error);
+    }
+  };
+
   return (
     <div className="app-container">
       <button
         className="start-button"
         disabled={audioStarted}
-        onClick={() => setAudioStarted(true)}
+        onClick={handleStartAudio}
       >
         Tap to Start Audio
       </button>
