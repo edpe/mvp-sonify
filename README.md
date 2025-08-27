@@ -1,69 +1,128 @@
-# React + TypeScript + Vite
+# MVP Sonify
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based audio application that creates musical soundscapes based on location, time, and seasonal data.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+MVP Sonify is a React + TypeScript + Vite application that generates procedural music using Web Audio API and Tone.js. The application creates immersive audio experiences that adapt to seasonal changes and user preferences.
 
-## Expanding the ESLint configuration
+## Features Implemented
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Step 0: Foundation ✅
+- **Vite + React + TypeScript** project setup
+- **Cross-Origin Isolation** headers configured for dev/preview/production
+  - `Cross-Origin-Opener-Policy: same-origin`
+  - `Cross-Origin-Embedder-Policy: require-corp`
+- **Production deployment configs**:
+  - `vercel.json` - Vercel deployment with security headers
+  - `netlify.toml` - Netlify deployment with security headers
+- **UI Foundation**:
+  - Full-viewport responsive layout
+  - "Tap to Start Audio" button
+  - Location input field
+  - Year selector (2018-2026)
+  - Season selector
+  - Reverb quality toggle (Eco/Studio)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Step 1: Audio Infrastructure ✅
+- **Audio Graph System** (`src/audio/graph.ts`):
+  - Master compressor/limiter chain
+  - Convolver reverb with impulse response loading
+  - Send bus architecture for effects routing
+  - Clean disposal and resource management
+- **Audio Context Management**:
+  - `startAudio()` function with proper Tone.js initialization
+  - Impulse response file loading (`/irs/medium-room.wav`)
+  - Button-triggered audio context activation
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Step 2: Musical Framework ✅
+- **Scale System** (`src/audio/scales.ts`):
+  - Five musical modes: Ionian, Dorian, Lydian, Mixolydian, Aeolian
+  - Scale degree to MIDI conversion
+  - MIDI note quantization to scale
+  - TypeScript types for musical structures
+- **Seasonal Scale Mapping** (`src/audio/seasonMode.ts`):
+  - Automatic seasonal scale selection:
+    - Winter → D Dorian (MIDI 50)
+    - Spring → G Lydian (MIDI 55)
+    - Summer → C Ionian (MIDI 48)
+    - Autumn → A Aeolian (MIDI 57)
+  - Date-based season detection
+  - Manual scale override system
+- **Enhanced UI**:
+  - Toggle between "Follow seasons" and "Fixed mode"
+  - Mode and root note selectors for fixed mode
+  - Live display of current active scale
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Technical Architecture
+
+### Audio Stack
+- **Tone.js** - Web Audio API abstraction and audio graph management
+- **Master Chain**: Input → Send Bus → Convolver → Master Compressor → Output
+- **Cross-Origin Isolation** - Required for advanced audio processing
+
+### Scale System
+- **Modal harmony** based on traditional Western modes
+- **MIDI-based** note representation (0-127)
+- **Seasonal mapping** with fallback to manual selection
+- **Real-time** scale switching without audio interruption
+
+### State Management
+- **React hooks** for UI state
+- **Module-level state** for audio and scale systems
+- **Clean separation** between UI, audio, and musical logic
+
+## Development
+
+### Prerequisites
+- Node.js 18+
+- Modern browser with Web Audio API support
+
+### Setup
+```bash
+npm install
+npm run dev     # Development server with hot reload
+npm run build   # Production build
+npm run preview # Preview production build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Project Structure
 ```
+src/
+├── audio/
+│   ├── graph.ts        # Audio graph management
+│   ├── scales.ts       # Musical scale definitions
+│   └── seasonMode.ts   # Seasonal scale mapping
+├── App.tsx             # Main UI component
+├── main.tsx            # App entry point with audio init
+└── index.css           # Minimal styling
+
+public/
+└── irs/
+    └── medium-room.wav # Impulse response for reverb
+```
+
+## Security & Performance
+
+- **Cross-Origin Isolation** enabled for advanced audio features
+- **No PWA/Service Worker** - Pure web application
+- **Minimal dependencies** - Focus on core audio functionality
+- **TypeScript** for type safety and developer experience
+
+## Deployment
+
+The application is configured for deployment on:
+- **Vercel** (via `vercel.json`)
+- **Netlify** (via `netlify.toml`)
+
+Both configurations include the required COOP/COEP headers for audio processing.
+
+## Next Steps
+
+- Step 3: Instrument implementation and sound generation
+- Step 4: Location-based audio processing
+- Step 5: Visual representation and UI polish
+
+## Contributing
+
+This is an MVP project following a careful step-by-step development approach. Each step builds incrementally on the previous foundation while maintaining a clean, testable codebase.
